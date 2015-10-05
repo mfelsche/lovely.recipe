@@ -20,8 +20,14 @@ runtime imports.
 
 $Id$
 """
-import compiler
-import os, os.path
+import six
+if six.PY2:
+    import compiler
+else:
+    import ast
+
+import os
+import os.path
 import sys
 
 def _findDottedNamesHelper(node, result):
@@ -55,58 +61,120 @@ def findDottedNames(node):
     _findDottedNamesHelper(node, result)
     return result
 
-class ImportFinder:
-    """An instance of this class will be used to walk over a compiler AST
-    tree (a module). During that operation, the appropriate methods of
-    this visitor will be called
-    """
+if six.PY2:
 
-    def __init__(self):
-        self._map = {}
-
-    def visitFrom(self, stmt):
-        """Will be called for 'from foo import bar' statements
+    class ImportFinder:
+        """An instance of this class will be used to walk over a compiler AST
+        tree (a module). During that operation, the appropriate methods of
+        this visitor will be called
         """
-        x = stmt.asList()
-        module_name = x[0]
-        names = x[1]
-        if module_name == '__future__':
-            # we don't care what's imported from the future
-            return
-        names_dict = {}
-        for orig_name, as_name in names:
-            # we don't care about from import *
-            if orig_name == '*':
-                continue
-            if as_name is None:
-                name = orig_name
-            else:
-                name = as_name
-            names_dict[name] = orig_name
-        self._map.setdefault(module_name, {'names': names_dict,
-                                           'lineno': stmt.lineno})
 
-    def visitImport(self, stmt):
-        """Will be called for 'import foo.bar' statements
+        def __init__(self):
+            self._map = {}
+
+        def visitFrom(self, stmt):
+            """Will be called for 'from foo import bar' statements
+            """
+            x = stmt.asList()
+            module_name = x[0]
+            names = x[1]
+            if module_name == '__future__':
+                # we don't care what's imported from the future
+                return
+            names_dict = {}
+            for orig_name, as_name in names:
+                # we don't care about from import *
+                if orig_name == '*':
+                    continue
+                if as_name is None:
+                    name = orig_name
+                else:
+                    name = as_name
+                names_dict[name] = orig_name
+            self._map.setdefault(module_name, {'names': names_dict,
+                                               'lineno': stmt.lineno})
+
+        def visitImport(self, stmt):
+            """Will be called for 'import foo.bar' statements
+            """
+            for orig_name, as_name in stmt.names:
+                if as_name is None:
+                    name = orig_name
+                else:
+                    name = as_name
+                self._map.setdefault(orig_name, {'names': {name: orig_name},
+                                                 'lineno': stmt.lineno})
+
+        def getMap(self):
+            return self._map
+
+    def findImports(mod):
+        """Find import statements in module and put the result in a mapping.
         """
-        for orig_name, as_name in stmt.names:
-            if as_name is None:
-                name = orig_name
-            else:
-                name = as_name
-            self._map.setdefault(orig_name, {'names': {name: orig_name},
-                                             'lineno': stmt.lineno})
+        visitor = ImportFinder()
+        compiler.walk(mod, visitor)
+        return visitor.getMap()
 
-    def getMap(self):
-        return self._map
+elif six.PY3:
 
-def findImports(mod):
-    """Find import statements in module and put the result in a mapping.
-    """
-    visitor = ImportFinder()
-    compiler.walk(mod, visitor)
-    return visitor.getMap()
+    class ImportFinder(ast.NodeVisitor):
+        """An instance of this class will be used to walk over a compiler AST
+        tree (a module). During that operation, the appropriate methods of
+        this visitor will be called
+        """
 
+        def __init__(self):
+            self._map = {}
+
+        def visit_ImportFrom(self, node):
+            """Will be called for 'from foo import bar' statements
+            """
+            # module, names, level
+            module_name = node.module
+            names = node.names
+            if module_name == '__future__':
+                # we don't care what's imported from the future
+                return
+            names_dict = {}
+            for alias in names:
+                # we don't care about from import *
+                if alias.name == '*':
+                    continue
+                if alias.asname is None:
+                    name = alias.name
+                else:
+                    name = alias.asname
+                names_dict[name] = alias.name
+            self._map.setdefault(module_name, {'names': names_dict,
+                                               'lineno': node.lineno})
+
+        def visit_Import(self, node):
+            """Will be called for 'import foo.bar' statements
+            """
+            for alias in node.names:
+                if alias.asname:
+                    name = alias.asname
+                else:
+                    name = alias.name
+                self._map.setdefault(alias.name, {'names': {name: alias.name},
+                                                 'lineno': node.lineno})
+            for orig_name, as_name in node.names:
+                if as_name is None:
+                    name = orig_name
+                else:
+                    name = as_name
+                self._map.setdefault(orig_name, {'names': {name: orig_name},
+                                                 'lineno': node.lineno})
+
+        def getMap(self):
+            return self._map
+
+    def findImports(mod):
+        """Find import statements in module and put the result in a mapping.
+        """
+        visitor = ImportFinder()
+        visitor.visit(mod)
+        return visitor.getMap()
 class Module:
     """This represents a python module.
     """
@@ -299,16 +367,15 @@ def main(argv = sys.argv):
         path = os.path.join(path, 'src')
 
     if not os.path.exists(path):
-        print "Please provide a valid path %r" % path
+        print("Please provide a valid path %r" % path)
         sys.exit(1)
-    print "-"*79
-    print "Path: %r" % path
-    print "-"*79
-    print
-
+    print("-" * 79)
+    print("Path: %r" % path)
+    print("-" * 79)
+    print()
     path = os.path.abspath(path)
     if not os.path.isdir(path):
-        print "Unknown path:", path
+        print("Unknown path:", path)
         sys.exit(1)
 
     db = ImportDatabase(path)
@@ -316,9 +383,9 @@ def main(argv = sys.argv):
     unused_imports = db.getUnusedImports()
     module_paths = unused_imports.keys()
     module_paths.sort()
-    print "-"*79
-    print "Unused Imports:"
-    print "-"*79
+    print("-" * 79)
+    print("Unused Imports:")
+    print("-" * 79)
     for path in module_paths:
         info = unused_imports[path]
         if not info:
@@ -332,24 +399,25 @@ def main(argv = sys.argv):
         lines.sort()
         for line in lines:
             names = ', '.join(line2names[line])
-            print "%s:%s: %s" % (path, line, names)
+            print("%s:%s: %s" % (path, line, names))
     testImports = db.getImportedModuleNames(tests=True)
     installImports = db.getImportedModuleNames(tests=False)
-    print "-"*79
-    print
-    print "-"*79
-    print "Imports for 'tests' and 'testing' packages"
-    print "-"*79
+    print("-" * 79)
+    print()
+    print("-" * 79)
+    print("Imports for 'tests' and 'testing' packages")
+    print("-" * 79)
     for name in [name for name in testImports if name not in installImports]:
-        print name
-    print "-"*79
-    print
-    print "-"*79
-    print "Install imports"
-    print "-"*79
+        print(name)
+    print("-" * 79)
+    print()
+    print("-" * 79)
+    print("Install imports")
+    print("-" * 79)
     for name in installImports:
-        print name
-    print "-"*79
+        print(name)
+    print("-" * 79)
+
 
 if __name__ == '__main__':
     main()

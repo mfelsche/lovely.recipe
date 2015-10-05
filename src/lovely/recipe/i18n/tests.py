@@ -16,8 +16,8 @@ $Id$
 """
 __docformat__ = 'restructuredtext'
 
-import unittest
-from zope.testing import doctest, renormalizing
+import unittest, doctest
+from zope.testing import renormalizing
 from lovely.recipe.testing import setUpBuildout
 from zc.buildout import testing
 

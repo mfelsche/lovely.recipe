@@ -28,15 +28,16 @@ Options:
 
 $Id$
 """
+from __future__ import print_function
 import sys
 import os
 import getopt
 
 def usage(code, msg=''):
     """Display help."""
-    print >> sys.stderr, '\n'.join(__doc__.split('\n')[:-2])
+    print('\n'.join(__doc__.split('\n')[:-2]), file=sys.stderr)
     if msg:
-        print >> sys.stderr, '** Error: ' + str(msg) + ' **'
+        print('** Error: ' + str(msg) + ' **', file=sys.stderr)
     sys.exit(code)
 
 
@@ -58,7 +59,7 @@ def merge(path):
                 domain_path = os.path.join(lc_messages_path, domain_file)
                 pot_path = os.path.join(path, domain_file+'t')
                 domain = domain_file.split('.')[0]
-                print 'Merging language "%s", domain "%s"' %(language, domain)
+                print('Merging language "%s", domain "%s"' %(language, domain))
                 os.system('msgmerge %s %s -o %s' %(
                                         domain_path, pot_path, domain_path))
 
@@ -69,7 +70,7 @@ def main(argv=sys.argv):
             argv[1:],
             'l:h',
             ['help', 'locals-dir='])
-    except getopt.error, msg:
+    except getopt.error as msg:
         usage(1, msg)
 
     path = None

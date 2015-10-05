@@ -39,9 +39,9 @@ MSGDONE = 4
 
 def usage(code, msg=''):
     """Display help."""
-    print >> sys.stderr, '\n'.join(__doc__.split('\n')[:-2])
+    print('\n'.join(__doc__.split('\n')[:-2]), file=sys.stderr)
     if msg:
-        print >> sys.stderr, '** Error: ' + str(msg) + ' **'
+        print('** Error: ' + str(msg) + ' **', file=sys.stderr)
     sys.exit(code)
 
 
@@ -103,8 +103,8 @@ def getMessageDictionary(file):
 
 
 def main(path):
-    print 'Language    Total    Done    Not Done    Fuzzy      Done %'
-    print '=========================================================='
+    print('Language    Total    Done    Not Done    Fuzzy      Done %')
+    print('==========================================================')
     languages = os.listdir(path)
     languages.sort()
     for language in languages:
@@ -139,7 +139,7 @@ def main(path):
         line += ' '*(9-len(str(fuzzy))) + str(fuzzy)
         pd_str = '%0.2f %%' %percent_done
         line += ' '*(12-len(pd_str)) + pd_str
-        print line
+        print(line)
     
 
 if __name__ == '__main__':
@@ -148,7 +148,7 @@ if __name__ == '__main__':
             sys.argv[1:],
             'l:h',
             ['help', 'locals-dir='])
-    except getopt.error, msg:
+    except getopt.error as msg:
         usage(1, msg)
 
     path = None

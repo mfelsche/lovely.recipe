@@ -61,11 +61,12 @@ $Id$
 from zope.configuration.name import resolve
 
 import os, sys, getopt
+
 def usage(code, msg=''):
-    # Python 2.1 required
-    print >> sys.stderr, __doc__
+    # Python 2.6 required
+    print(__doc__, file=sys.stderr)
     if msg:
-        print >> sys.stderr, msg
+        print(msg, file=sys.stderr)
     sys.exit(code)
 
 def app_dir():
@@ -98,7 +99,7 @@ def main(argv=sys.argv):
             argv[1:],
             'hed:s:i:m:p:o:x:',
             ['help', 'domain=', 'site_zcml=', 'path=', 'python-only', 'html'])
-    except getopt.error, msg:
+    except getopt.error as msg:
         usage(1, msg)
 
     domain = 'zope'
@@ -153,7 +154,7 @@ def main(argv=sys.argv):
             os.mkdir(output_dir)
         output_file = os.path.join(output_dir, output_file)
 
-    print "base path: %r\n" \
+    print("base path: %r\n" \
           "search path: %s\n" \
           "'site.zcml' location: %s\n" \
           "exclude dirs: %r\n" \
@@ -163,7 +164,7 @@ def main(argv=sys.argv):
           "Python only: %r" \
           "parse html files: %r" \
           % (base_dir, path, site_zcml, exclude_dirs, domain,
-             include_default_domain, output_file, python_only, extract_html)
+             include_default_domain, output_file, python_only, extract_html))
 
     from zope.app.locales.extract import POTMaker, \
          py_strings, tal_strings, zcml_strings

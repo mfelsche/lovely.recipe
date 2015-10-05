@@ -15,7 +15,7 @@ Creating Directories
     ... recipe = lovely.recipe:mkdir
     ... path = ${buildout:directory}/mystuff
     ... """)
-    >>> print system(buildout),
+    >>> print(system(buildout))
     Installing data-dir.
     data-dir: Creating directory /sample-buildout/mystuff
 
@@ -40,7 +40,7 @@ If we change the directory name the old directory ('mystuff') is not deleted.
     ... recipe = lovely.recipe:mkdir
     ... path = ${buildout:directory}/otherdir
     ... """)
-    >>> print system(buildout),
+    >>> print(system(buildout))
     Uninstalling data-dir.
     Installing data-dir.
     data-dir: Creating directory /sample-buildout/otherdir
@@ -67,7 +67,7 @@ We can also create a full path.
     ... recipe = lovely.recipe:mkdir
     ... path = ${buildout:directory}/with/subdir
     ... """)
-    >>> print system(buildout),
+    >>> print(system(buildout))
     Uninstalling data-dir.
     Installing data-dir.
     data-dir: Cannot create /sample-buildout/with/subdir. /sample-buildout/with is not a directory.
@@ -88,7 +88,7 @@ But we need to activate this function explicitely.
     ... createpath = True
     ... path = ${buildout:directory}/with/subdir
     ... """)
-    >>> print system(buildout),
+    >>> print(system(buildout))
     Installing data-dir.
     data-dir: Creating parent directory /sample-buildout/with
     data-dir: Creating directory /sample-buildout/with/subdir
@@ -110,7 +110,7 @@ There is no update method so the install method is used upon update
 and the directories get recreated.
 
     >>> rmdir(sample_buildout + '/with')
-    >>> print system(buildout),
+    >>> print(system(buildout))
     Updating data-dir.
     The recipe for data-dir doesn't define an update method. Using its install method.
     data-dir: Creating parent directory /sample-buildout/with
@@ -133,7 +133,7 @@ If not run as root, setting the owner is an error:
     ... path = ${buildout:directory}/another/with/subdir
     ... owner = nobody
     ... """)
-    >>> print system(buildout),
+    >>> print(system(buildout))
     While:
       Installing.
       Getting section data-dir.
@@ -155,7 +155,7 @@ It is an error when the user does not exist:
     ... path = ${buildout:directory}/another/with/subdir
     ... owner = someuser
     ... """)
-    >>> print system(buildout),
+    >>> print(system(buildout))
     While:
       Installing.
       Getting section data-dir.
@@ -183,7 +183,7 @@ is raised.
     ... content = hoschi
     ... mode = 0755
     ... """)
-    >>> print system(buildout)
+    >>> print(system(buildout))
     Uninstalling data-dir.
     Installing script.
     script: Cannot create file /x/y/file.sh. /x/y is not a directory.
@@ -202,7 +202,7 @@ is raised.
     ... content = hoschi
     ... mode = 0755
     ... """)
-    >>> print system(buildout)
+    >>> print(system(buildout))
     Installing script.
     script: Writing file /sample-buildout/file.sh
     <BLANKLINE>
@@ -244,7 +244,7 @@ If we change the filename the old file is deleted.
     ... content = hoschi
     ... mode = 0755
     ... """)
-    >>> print system(buildout)
+    >>> print(system(buildout))
     Uninstalling script.
     Installing script.
     script: Writing file /sample-buildout/newfile.sh
@@ -276,7 +276,7 @@ We can also specify to create the path for the file.
     ... content = hoschi
     ... mode = 0755
     ... """)
-    >>> print system(buildout)
+    >>> print(system(buildout))
     Uninstalling script.
     Installing script.
     script: Creating directory /sample-buildout/subdir/for/file
@@ -306,7 +306,7 @@ and in the content of the file via normal string formatting notation.
     ... content = hoschi variation %(variation)s
     ... mode = 0755
     ... """)
-    >>> print system(buildout)
+    >>> print(system(buildout))
     Uninstalling script.
     Installing script.
     script: Writing file ...sample-buildout/prod_1.ini

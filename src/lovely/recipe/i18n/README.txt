@@ -23,7 +23,7 @@ Creating The Tools
     ... output = locales
     ... maker = z3c.csvvocabulary.csvStrings
     ... """)
-    >>> print system(buildout),
+    >>> print(system(buildout))
     Installing i18n.
     i18n: setting up i18n tools
     Generated script 'bin/i18nextract'.
@@ -118,7 +118,7 @@ and 'translationmergeall'.
     ... output = locales
     ... maker = z3c.csvvocabulary.csvStrings
     ... """)
-    >>> print system(buildout),
+    >>> print(system(buildout))
     Uninstalling i18n.
     Installing translation.
     translation: setting up i18n tools
@@ -155,7 +155,7 @@ of the generated configure.zcml.
     ...
     ... """)
 
-    >>> print system(buildout),
+    >>> print(system(buildout))
     Uninstalling translation.
     Installing i18n.
     i18n: setting up i18n tools

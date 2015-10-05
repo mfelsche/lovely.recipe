@@ -30,7 +30,7 @@ use the recipe.
     ... """ % dict(loc=lovely_recipy_loc, server=link_server))
 
 
-    >>> print system(buildout)
+    >>> print(system(buildout))
     Develop: '...lovely.recipe'
     Getting distribution for 'demo'.
     Got demo 0.4c1.
@@ -93,7 +93,7 @@ setuptools egg. We can also create a script.
     ... extra-paths = ${packages:path}
     ... interpreter = py
     ... """ % dict(loc=lovely_recipy_loc, server=link_server))
-    >>> print system(buildout),
+    >>> print(system(buildout))
     Develop: '/Users/bd/sandbox/lovely.recipe'
     Uninstalling packages.
     Installing packages.
@@ -112,8 +112,8 @@ python path.
     d  eggrecipedemoneeded.py
     d  zc
 
-    >>> print system(join(sample_buildout, 'bin', 'py') + \
-    ...        ' -c "import lovely.recipe; print lovely.recipe.__file__"')
+    >>> print(system(join(sample_buildout, 'bin', 'py') + \
+    ...        ' -c "import lovely.recipe; print(lovely.recipe.__file__)"'))
     /.../src/lovely/recipe/__init__.py...
 
 

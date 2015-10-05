@@ -18,7 +18,7 @@ __docformat__ = 'restructuredtext'
 
 from zc.buildout import testing
 import doctest, unittest
-from zope.testing import doctest, renormalizing
+from zope.testing import renormalizing
 
 from lovely.recipe.testing import setUpBuildout
 

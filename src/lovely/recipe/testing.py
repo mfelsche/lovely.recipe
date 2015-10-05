@@ -1,5 +1,6 @@
 from zc.buildout import testing
 
+
 def setUpBuildout(test):
     testing.buildoutSetUp(test)
     testing.install_develop('zc.recipe.egg', test)

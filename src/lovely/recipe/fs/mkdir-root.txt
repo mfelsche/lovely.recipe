@@ -18,7 +18,7 @@ We can change the owner of the created directory if run as root:
     >>> import os
     >>> import pwd
     >>> nobody_uid = pwd.getpwnam('nobody')[2]
-    >>> print system(buildout),
+    >>> print(system(buildout))
     Installing data-dir.
     data-dir: Creating parent directory /sample-buildout/with
     data-dir: Creating directory /sample-buildout/with/subdir

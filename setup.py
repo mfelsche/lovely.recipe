@@ -57,6 +57,7 @@ setup (
     install_requires = ['setuptools',
                         'zc.buildout',
                         'zc.recipe.egg',
+                        'six'
                         ],
     entry_points = entry_points,
     zip_safe = True,

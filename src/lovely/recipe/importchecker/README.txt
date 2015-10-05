@@ -19,7 +19,7 @@ Creating The Script
     ... recipe = lovely.recipe:importchecker
     ... path = src/lovely
     ... """)
-    >>> print system(buildout),
+    >>> print(system(buildout))
     Installing checker.
     checker: setting up importchecker
     Generated script 'bin/importchecker'.
